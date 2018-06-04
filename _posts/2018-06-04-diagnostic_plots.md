@@ -23,3 +23,7 @@ par(mfrow=c(2,2))
 
 plot(model)
 ```
+
+Which plots the following images
+
+![R Plots](../img/rplots.png)
