@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Get to know me!
+title: Get to know me!  
 subtitle:
 ---
 
