@@ -27,3 +27,34 @@ plot(model)
 Which plots the following images
 
 ![R Plots](../img/rplots.png)
+
+First, we will recreate these plots in Python and then we'll go into interpretation of them towards the end of this blog post.
+
+We'll begin by importing the relevant libraries necessary for building our plots and reading in the data.
+
+**Libraries**
+```python
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import statsmodels.formula.api as smf
+from statsmodels.graphics.gofplots import ProbPlot
+plt.style.use('seaborn') # pretty matplotlib plots
+plt.rc('font', size=14)
+plt.rc('figure', titlesize=18)
+plt.rc('axes', labelsize=15)
+plt.rc('axes', titlesize=18)
+
+%matplotlib inline
+```
+
+**Data**
+```python
+from sklearn.datasets import load_boston
+
+boston = load_boston()
+
+X = pd.DataFrame(boston.data, columns=boston.feature_names)
+y = pd.DataFrame(boston.target)
+```
