@@ -17,7 +17,7 @@ baseurl: ""
 title: Blogging ML
 
 # Short description of your site
-description: A virtual proof that name is awesome!
+description: A blog about ML tidbits
 
 # --- Navigation bar options --- #
 
@@ -25,13 +25,13 @@ description: A virtual proof that name is awesome!
 navbar-links:
   About Me: "aboutme"
   Resources:
+    - Metis: "http://thisismetis.com"
     - Beautiful Jekyll: "http://deanattali.com/beautiful-jekyll/"
     - Learn markdown: "http://www.markdowntutorial.com/"
-    - Metis: "http://thisismetis.com"
 
 # Image to show in the navigation bar - image must be a square (width = height)
 # Remove this parameter if you don't want an image in the navbar
-avatar: "img/avatar-icon.png"
+avatar: "img/headshot.jpg"
 
 # If you want to have an image logo in the top-left corner instead of the title text,
 # then specify the following parameter
