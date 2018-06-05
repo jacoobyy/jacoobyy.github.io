@@ -7,15 +7,19 @@ gh-badge:
 tags: [OLS, diagnostic plots, python, linear regression, machine learning]
 ---
 
-During my time working in market sizing and using general linear models, the group that I was in used R as the main programming language. This decision was made because of how the team was structured and the strengths of each member. R was primarily built as a data analysis tool with an emphasis on statistical features and is great for all sorts of statistical models.
+<!-- During my time working in market sizing and using general linear models, the group that I was in used R as the main programming language. This decision was made because of how the team was structured and the strengths of each member. R was primarily built as a data analysis tool with an emphasis on statistical features and is great for all sorts of statistical models. -->
 
-When considering different ordinary linear regression (OLS) models or interpreting if the model you currently built is capturing all of the variance it is useful to look at diagnostic plots.
+Making the switch to Python after having used R for several years, I noticed there was a lack of good default plots when running ordinary linear regression (OLS) models in Python. From using R, I had familiarized myself with debugging OLS models with the built-in diagnostic plots to make changes, but after switching to Python I didn't know how to get the original plots back that I had turned to time and time again.
+
+So, I did what most people in my situation would do - I turned to Google for help. After trying different queries, I eventually found [this](https://medium.com/@emredjan/emulating-r-regression-plots-in-python-43741952c034) excellent resource that got me 90% of the way there to recreate these plots in a programmatic way. This post will work leverage a lot of that work and at the end will wrap it all in a function that anyone can cut and paste into their code and reproduce these plots regardless of the dataset.
+
+<!-- When considering different ordinary linear regression (OLS) models or interpreting if the model you currently built is capturing all of the variance it is useful to look at diagnostic plots. -->
 
 # What are diagnostic plots?
 
-In short, diagnostic plots help us determine visually how good our model is fitting the data. We will be looking at several different plots in this post and show how each of them can be used to diagnose issues in the model.
+In short, diagnostic plots help us determine visually how good our model is fitting the data. We will be looking at several different plots in this post and show how each of them can be used to diagnose issues in the model. Each of the plots will looks at **residuals**, which is mathematical jargon for the squared error between the actual value and the predicted value.
 
-Let's look at an example of this in R using the Boston housing data.
+Let's look at an example of this in R using the *Boston* housing data.
 
 ```R
 library(MASS)
@@ -33,7 +37,7 @@ Which plots the following images
 
 <!-- First, we will recreate these plots in Python and then we'll go into interpretation of them towards the end of this blog post. -->
 
-Our goal is to recreate these plots and provide some insight into their meaning and interpret them in the case of the Boston dataset.
+Our goal is to recreate these plots and provide some insight into their meaning and interpret them in the case of the Boston housing dataset.
 
 We'll begin by importing the relevant libraries necessary for building our plots and reading in the data.
 
@@ -134,7 +138,7 @@ for r, i in enumerate(abs_norm_resid_top_3):
 
 
 # Scale-Location
-This plot is a way to check if the residuals suffer from non-constant variance. In other words, if they suffer from [heteroscedasticity](https://en.wikipedia.org/wiki/Heteroscedasticity)
+This plot is a way to check if the residuals suffer from non-constant variance, aka [heteroscedasticity](https://en.wikipedia.org/wiki/Heteroscedasticity). 
 
 ## Code
 
