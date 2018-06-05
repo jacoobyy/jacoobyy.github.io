@@ -9,9 +9,11 @@ tags: [OLS, diagnostic plots, python, linear regression, machine learning]
 
 <!-- During my time working in market sizing and using general linear models, the group that I was in used R as the main programming language. This decision was made because of how the team was structured and the strengths of each member. R was primarily built as a data analysis tool with an emphasis on statistical features and is great for all sorts of statistical models. -->
 
-Making the switch to Python after having used R for several years, I noticed there was a lack of good default plots when running ordinary linear regression (OLS) models in Python. From using R, I had familiarized myself with debugging OLS models with the built-in diagnostic plots to make changes, but after switching to Python I didn't know how to get the original plots back that I had turned to time and time again.
+Making the switch to Python after having used R for several years, I noticed there was a lack of good base plots for evaluating ordinary linear regression (OLS) models in Python. From using R, I had familiarized myself with debugging and tweaking OLS models with the built-in diagnostic plots, but after switching to Python I didn't know how to get the original plots from R that I had turned to time and time again.
 
-So, I did what most people in my situation would do - I turned to Google for help. After trying different queries, I eventually found [this](https://medium.com/@emredjan/emulating-r-regression-plots-in-python-43741952c034) excellent resource that got me 90% of the way there to recreate these plots in a programmatic way. This post will work leverage a lot of that work and at the end will wrap it all in a function that anyone can cut and paste into their code and reproduce these plots regardless of the dataset.
+So, I did what most people in my situation would do - I turned to Google for help.
+
+After trying different queries, I eventually found [this](https://medium.com/@emredjan/emulating-r-regression-plots-in-python-43741952c034) excellent resource that got me 90% of the way there to recreate these plots in a programmatic way. This post will work leverage a lot of that work and at the end will wrap it all in a function that anyone can cut and paste into their code to reproduce these plots regardless of the dataset.
 
 <!-- When considering different ordinary linear regression (OLS) models or interpreting if the model you currently built is capturing all of the variance it is useful to look at diagnostic plots. -->
 
@@ -23,11 +25,8 @@ Let's look at an example of this in R using the *Boston* housing data.
 
 ```R
 library(MASS)
-Boston
 model <- lm(medv ~ ., data=Boston)
-
 par(mfrow=c(2,2))
-
 plot(model)
 ```
 
@@ -138,7 +137,7 @@ for r, i in enumerate(abs_norm_resid_top_3):
 
 
 # Scale-Location
-This plot is a way to check if the residuals suffer from non-constant variance, aka [heteroscedasticity](https://en.wikipedia.org/wiki/Heteroscedasticity). 
+This plot is a way to check if the residuals suffer from non-constant variance, aka [heteroscedasticity](https://en.wikipedia.org/wiki/Heteroscedasticity).
 
 ## Code
 
@@ -198,14 +197,32 @@ plot_lm_4 = plt.figure();
 # Wrapping it all in a function
 
 {% highlight python linenos %}
-# helper function for plotting cook's distance lines
 def graph(formula, x_range, label=None):
-  x = x_range
-  y = formula(x)
-  plt.plot(x, y, label=label, lw=1, ls='--', color='red')
+    """
+    Helper function for plotting cook's distance lines
+    """
+    x = x_range
+    y = formula(x)
+    plt.plot(x, y, label=label, lw=1, ls='--', color='red')
 
 
-def diagnostic_plots(model_fit, X, y):
+def diagnostic_plots(X, y, model_fit=None):
+  """
+  Function to reproduce the 4 base plots of an OLS model in R.
+
+  ---
+  Inputs:
+
+  X: A numpy array or pandas dataframe of the features to use in building the linear regression model
+
+  y: A numpy array or pandas series/dataframe of the target variable of the linear regression model
+
+  model_fit [optional]: a statsmodel.api.OLS model after regressing y on X. If not provided, will be
+                        generated from X, y
+  """
+
+  if not model_fit:
+      model_fit = sm.OLS(y, sm.add_constant(X)).fit()
 
   # create dataframe from X, y for easier plot handling
   dataframe = pd.concat([X, y], axis=1)
