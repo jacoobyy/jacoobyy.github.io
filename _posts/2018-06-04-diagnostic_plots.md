@@ -64,7 +64,7 @@ model = sm.OLS(y, sm.add_constant(X))
 model_fit = model.fit()
 ```
 
-First up is the **Residuals vs Fitted** plot. This graph shows if there are any nonlinear patterns in the residuals, and thus in the data as well. An example of this is trying to fit the function $$f(x) = x^2$$ with a linear regression $$y ~ \beta_0 + \beta_1 x$$. Clearly, the relationship is nonlinear and thus the residuals will look similarly bow-shaped.
+First up is the **Residuals vs Fitted** plot. This graph shows if there are any nonlinear patterns in the residuals, and thus in the data as well. An example of this is trying to fit the function $$ f(x) = x^2 $$ with a linear regression $$ y ~ \beta_0 + \beta_1 x $$ . Clearly, the relationship is nonlinear and thus the residuals will look similarly bow-shaped.
 
 **The Code**
 
