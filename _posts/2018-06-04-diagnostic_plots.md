@@ -32,7 +32,7 @@ First, we will recreate these plots in Python and then we'll go into interpretat
 
 We'll begin by importing the relevant libraries necessary for building our plots and reading in the data.
 
-**Libraries**
+## Libraries
 
 ```python
 import numpy as np
@@ -49,7 +49,7 @@ plt.rc('axes', titlesize=18)
 %matplotlib inline
 ```
 
-**Data**
+## Data
 
 ```python
 from sklearn.datasets import load_boston
@@ -62,16 +62,18 @@ y = pd.DataFrame(boston.target)
 # generate OLS model
 model = sm.OLS(y, sm.add_constant(X))
 model_fit = model.fit()
-```
 
-First up is the **Residuals vs Fitted** plot. This graph shows if there are any nonlinear patterns in the residuals, and thus in the data as well. An example of this is trying to fit the function $$ f(x) = x^2 $$ with a linear regression $$ y ~ \beta_0 + \beta_1 x $$ . Clearly, the relationship is nonlinear and thus the residuals will look similarly bow-shaped.
-
-**The Code**
-
-```python
 # create dataframe from X, y for easier plot handling
 dataframe = pd.concat([X, y], axis=1)
+```
 
+## Residuals vs Fitted
+
+First up is the **Residuals vs Fitted** plot. This graph shows if there are any nonlinear patterns in the residuals, and thus in the data as well. An example of this is trying to fit the function $$ f(x) = x^2 $$ with a linear regression $$ y = \beta_0 + \beta_1 x $$. Clearly, the relationship is nonlinear and thus the residuals will look similarly bow-shaped.
+
+### Code
+
+```python
 # model values
 model_fitted_y = model_fit.fittedvalues
 # model residuals
@@ -101,3 +103,7 @@ plot_lm_1.axes[0].set_ylabel('Residuals');
 which yields the following plot
 
 ![Residuals vs Fitted](../img/residplot1.png)
+
+
+## Q-Q Plot
+Next is the **Normal Q-Q Plot**
