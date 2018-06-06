@@ -19,7 +19,7 @@ After trying different queries, I eventually found [this](https://medium.com/@em
 
 # What are diagnostic plots?
 
-In short, diagnostic plots help us determine visually how good our model is fitting the data. We will be looking at four main plots in this post and describe how each of them can be used to diagnose issues in an OLS model. Each of these plots will focus on the **residuals** of a model, which is mathematical jargon for the squared error between the actual value and the predicted value, i.e., $$ r_i = (y_i - \bar{y}_i)^2 $$.
+In short, diagnostic plots help us determine visually how our model is fitting the data and if any of the basic assumptions of an OLS model are being violated. We will be looking at four main plots in this post and describe how each of them can be used to diagnose issues in an OLS model. Each of these plots will focus on the **residuals** of a model, which is mathematical jargon for the square value of the difference between the actual value and the predicted value, i.e., $$ r_i = (y_i - \bar{y}_i)^2 $$.
 
 Let's look at an example in R, and its corresponding output, using the *Boston* housing data.
 
@@ -111,9 +111,10 @@ which yields the following plot
 
 ![Residuals vs Fitted](../img/residplot1.png)
 
+Notice the bow-shaped line in red. This is an indicator that we are not capturing some of the non-linear features of the model. In other words, the model variance might be better captured using the _square_ (or some other non-linear transformation) of one or more of the features. Which feature(s) specifically is beyond the scope of this post.
 
 # Normal Q-Q Plot
-This plot shows if the residuals are normally distributed. A **good** normal QQ plot has all of the residuals along the red line.
+This plot shows if the residuals are normally distributed. A **good** normal QQ plot has all of the residuals pretty close to the red line.
 
 ## Code
 ```python
