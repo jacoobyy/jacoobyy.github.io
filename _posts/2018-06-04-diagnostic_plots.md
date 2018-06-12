@@ -13,13 +13,15 @@ Making the switch to Python after having used R for several years, I noticed the
 
 So, I did what most people in my situation would do - I turned to Google for help.
 
-After trying different queries, I eventually found [this](https://medium.com/@emredjan/emulating-r-regression-plots-in-python-43741952c034) excellent resource that got me 90% of the way there to recreate these plots in a programmatic way. This post will leverage a lot of that work and at the end will wrap it all in a function that anyone can cut and paste into their code to reproduce these plots regardless of the dataset.
-
-<!-- When considering different ordinary linear regression (OLS) models or interpreting if the model you currently built is capturing all of the variance it is useful to look at diagnostic plots. -->
+After trying different queries, I eventually found [this](https://medium.com/@emredjan/emulating-r-regression-plots-in-python-43741952c034) excellent resource that got me 90% of the way to recreating these plots in a programmatic way. This post will leverage a lot of that work and at the end will wrap it all in a function that anyone can cut and paste into their code to reproduce these plots regardless of the dataset.
 
 # What are diagnostic plots?
 
-In short, diagnostic plots help us determine visually how our model is fitting the data and if any of the basic assumptions of an OLS model are being violated. We will be looking at four main plots in this post and describe how each of them can be used to diagnose issues in an OLS model. Each of these plots will focus on the **residuals** of a model, which is mathematical jargon for the square value of the difference between the actual value and the predicted value, i.e., $$ r_i = (y_i - \bar{y}_i)^2 $$.
+In short, diagnostic plots help us determine visually how our model is fitting the data and if any of the basic assumptions of an OLS model are being violated. We will be looking at four main plots in this post and describe how each of them can be used to diagnose issues in an OLS model. Each of these plots will focus on the **residuals** - or error - of a model, which is mathematical jargon for the difference between the actual value and the predicted value, i.e., $$ r_i = y_i - \bar{y}_i $$.
+
+These 4 plots assess the main assumptions of an OLS model:
+
+1)
 
 Let's look at an example in R, and its corresponding output, using the *Boston* housing data.
 
@@ -31,8 +33,6 @@ plot(model)
 ```
 
 ![R Plots](../img/rplots.png)
-
-<!-- First, we will recreate these plots in Python and then we'll go into interpretation of them towards the end of this blog post. -->
 
 Our goal is to recreate these R plots using Python and provide some insight into their meaning in the Boston housing dataset.
 
