@@ -9,7 +9,7 @@ tags: [OLS, diagnostic plots, python, linear regression, machine learning]
 
 <!-- During my time working in market sizing and using general linear models, the group that I was in used R as the main programming language. This decision was made because of how the team was structured and the strengths of each member. R was primarily built as a data analysis tool with an emphasis on statistical features and is great for all sorts of statistical models. -->
 
-Making the switch to Python after having used R for several years, I noticed there was a lack of good base plots for evaluating ordinary linear regression (OLS) models in Python. From using R, I had familiarized myself with debugging and tweaking OLS models with the built-in diagnostic plots, but after switching to Python I didn't know how to get the original plots from R that I had turned to time and time again.
+Making the switch to Python after having used R for several years, I noticed there was a lack of good base plots for evaluating ordinary least squares (OLS) regression models in Python. From using R, I had familiarized myself with debugging and tweaking OLS models with the built-in diagnostic plots, but after switching to Python I didn't know how to get the original plots from R that I had turned to time and time again.
 
 So, I did what most people in my situation would do - I turned to Google for help.
 
@@ -17,11 +17,14 @@ After trying different queries, I eventually found [this](https://medium.com/@em
 
 # What are diagnostic plots?
 
-In short, diagnostic plots help us determine visually how our model is fitting the data and if any of the basic assumptions of an OLS model are being violated. We will be looking at four main plots in this post and describe how each of them can be used to diagnose issues in an OLS model. Each of these plots will focus on the **residuals** - or error - of a model, which is mathematical jargon for the difference between the actual value and the predicted value, i.e., $$ r_i = y_i - \bar{y}_i $$.
+In short, diagnostic plots help us determine visually how our model is fitting the data and if any of the basic assumptions of an OLS model are being violated. We will be looking at four main plots in this post and describe how each of them can be used to diagnose issues in an OLS model. Each of these plots will focus on the **residuals** - or errors - of a model, which is mathematical jargon for the difference between the actual value and the predicted value, i.e., $$ r_i = y_i - \bar{y}_i $$.
 
-These 4 plots assess the main assumptions of an OLS model:
+These 4 plots examine a few different assumptions about the model and the data:
 
-1)
+1) The data can be fit a line (this includes after transformations on the predictors)
+2) Errors are normally distributed
+3) Errors have constant variance, i.e., [homoscedasticity](https://en.wikipedia.org/wiki/Homoscedasticity)
+4) There are no [high leverage points](https://newonlinecourses.science.psu.edu/stat501/node/337/)
 
 Let's look at an example in R, and its corresponding output, using the *Boston* housing data.
 
@@ -111,7 +114,7 @@ which yields the following plot
 
 ![Residuals vs Fitted](../img/residplot1.png)
 
-Notice the bow-shaped line in red. This is an indicator that we are not capturing some of the non-linear features of the model. In other words, the model variance might be better captured using the _square_ (or some other non-linear transformation) of one or more of the features. Which feature(s) specifically is beyond the scope of this post.
+Notice the bow-shaped line in red. This is an indicator that we are not capturing some of the non-linear features of the model. In other words, we are underfitting the model. Perhaps the variance in the data might be better captured using the _square_ (or some other non-linear transformation) of one or more of the features. Which feature(s) specifically is beyond the scope of this post.
 
 # Normal Q-Q Plot
 This plot shows if the residuals are normally distributed. A **good** normal QQ plot has all of the residuals pretty close to the red line.
@@ -133,6 +136,12 @@ for r, i in enumerate(abs_norm_resid_top_3):
 ```
 
 ![Normalized QQ Plot](../img/residplot2.png)
+
+Looking at the graph above, there are several points that fall far away from the red line. This is indicative of the errors **not** being normally distributed, in fact our model suffers from "heavy tails".
+
+What does this say about the data? We are more likely to see extreme values than expected if the data was truly normally distributed.
+
+In general, there is plenty of wiggle room in violating these assumptions, but it is good to know what assumptions about the data we are violating.
 
 
 # Scale-Location
@@ -164,9 +173,10 @@ plot_lm_3 = plt.figure()
 
 ![Scale-Location](../img/residplot3.png)
 
+*This* particular plot is a tricky one to debug. The more horizontal the red line is, the more likely the data is homoscedastic. While a typical heteroscedastic plot has a sideways "V" shape, our graph has higher values on the left and on the right versus in the middle. This might be caused by not capturing the non-linearities in the model (see Residuals vs Fitted plot) and merits further investigation or model tweaking.
 
 # Residuals vs Leverage
-
+Leverage points are nasty buggers. Unlike outliers, which has a high $$ y $$ value, leverage points have extreme $$ x $$ values. This may not seem so bad at face value, but it can have damaging effects on the model because the data is $$ \beta $$ coefficients can be very sensitive to leverage points. The purpose of the Residuals vs Leverage plot is to identify these problematic observations.
 
 ## Code
 ```python
@@ -192,6 +202,10 @@ plot_lm_4 = plt.figure();
 ```
 
 ![Residuals vs Leverage](../img/residplot4.png)
+
+Fortunately, this arguably one of the easiest plots to interpret. Thanks to [Cook's Distance](https://en.wikipedia.org/wiki/Cook%27s_distance), we only need to find leverage points that have a distance greater than 0.5. In this plot, we do not have any leverage points.
+
+In practice, there may be cases where we may want to remove points with a Cook's distance of less than 0.5, especially if there are only a few observations compared to the rest of the data. I would argue that removing the point on the far right of the plot should improve the model.
 
 # Wrapping it all in a function
 
