@@ -21,7 +21,7 @@ In short, diagnostic plots help us determine visually how our model is fitting t
 
 These 4 plots examine a few different assumptions about the model and the data:
 
-1) The data can be fit a line (this includes any transformations made to the predictors, e.g., $$ x^2 $$ or $$ \sqrt{x} $$)
+1) The data can be fit by a line (this includes any transformations made to the predictors, e.g., $$ x^2 $$ or $$ \sqrt{x} $$)
 
 2) Errors are normally distributed with mean zero
 
@@ -117,7 +117,10 @@ The code above yields the following plot
 
 ![Residuals vs Fitted](../img/residplot1.png)
 
-Notice the bow-shaped line in red. This is an indicator that we are failing to capture some of the non-linear features of the model. In other words, we are _underfitting_ the model. Perhaps the variance in the data might be better captured using the _square_ (or some other non-linear transformation) of one or more of the features. Which feature(s) specifically is beyond the scope of this post.
+An ideal Residuals vs Fitted plot will look like random noise; there won't be any apparent patterns in the scatterplot
+and the red line would be horizontal.
+
+Examine the plot generated using the housing dataset. Notice the bow-shaped line in red? This is an indicator that we are failing to capture some of the non-linear features of the model. In other words, we are _underfitting_ the model. Perhaps the variance in the data might be better captured using the _square_ (or some other non-linear transformation) of one or more of the features. Which feature(s) specifically is beyond the scope of this post.
 
 # Normal Q-Q Plot
 
@@ -182,7 +185,7 @@ plot_lm_3 = plt.figure()
 
 # Residuals vs Leverage
 
-Leverage points are nasty buggers. Unlike outliers, which have an unusually large $$ y $$ value, leverage points have extreme $$ x $$ values. This may not seem so bad at face value, but it can have damaging effects on the model because the $$ \beta $$ coefficients can be very sensitive to leverage points. The purpose of the Residuals vs Leverage plot is to identify these problematic observations.
+Leverage points are nasty buggers. Unlike outliers, which have an unusually large $$ y $$ value, leverage points have extreme $$ x $$ values. This may not seem so bad at face value, but it can have damaging effects on the model because the $$ \beta $$ coefficients are very sensitive to leverage points. The purpose of the Residuals vs Leverage plot is to identify these problematic observations.
 
 ## Code
 ```python
