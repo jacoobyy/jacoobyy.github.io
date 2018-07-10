@@ -13,7 +13,7 @@ Making the switch to Python after having used R for several years, I noticed the
 
 So, I did what most people in my situation would do - I turned to Google for help.
 
-After trying different queries, I eventually found [this](https://medium.com/@emredjan/emulating-r-regression-plots-in-python-43741952c034) excellent resource that got me 90% of the way to recreating these plots in a programmatic way. This post will leverage a lot of that work and at the end will wrap it all in a function that anyone can cut and paste into their code to reproduce these plots regardless of the dataset.
+After trying different queries, I eventually found [this](https://medium.com/@emredjan/emulating-r-regression-plots-in-python-43741952c034) excellent resource that was helpful in recreating these plots in a programmatic way. This post will leverage a lot of that work and at the end will wrap it all in a function that anyone can cut and paste into their code to reproduce these plots regardless of the dataset.
 
 # What are diagnostic plots?
 
@@ -21,9 +21,9 @@ In short, diagnostic plots help us determine visually how our model is fitting t
 
 These 4 plots examine a few different assumptions about the model and the data:
 
-1) The data can be fit a straight line (this includes any transformations made on the predictors, e.g., $$ x^2 $$)
+1) The data can be fit a line (this includes any transformations made to the predictors, e.g., $$ x^2 $$ or $$ \sqrt{x} $$)
 
-2) Errors are normally distributed
+2) Errors are normally distributed with mean zero
 
 3) Errors have constant variance, i.e., [homoscedasticity](https://en.wikipedia.org/wiki/Homoscedasticity)
 
@@ -40,7 +40,7 @@ plot(model)
 
 ![R Plots](../img/rplots.png)
 
-Our goal is to recreate these R plots using Python and provide some insight into their meaning in the housing dataset.
+Our goal is to recreate these plots using Python and provide some insight into their usefulness using the housing dataset.
 
 We'll begin by importing the relevant libraries necessary for building our plots and reading in the data.
 
@@ -82,7 +82,7 @@ dataframe = pd.concat([X, y], axis=1)
 
 First up is the **Residuals vs Fitted** plot. This graph shows if there are any nonlinear patterns in the residuals, and thus in the data as well. One of the mathematical assumptions in building an OLS model is that the data can be fit by a line. If this assumption holds and our data can be fit by a linear model, then we should see a relatively flat line when looking at the residuals vs fitted.  
 
-An example of this failing would be trying to fit the function $$ f(x) = x^2 $$ with a linear regression $$ y = \beta_0 + \beta_1 x $$. Clearly, the relationship is nonlinear and thus the residuals will look bow-shaped.
+An example of this failing would be trying to fit the function $$ f(x) = x^2 $$ with a linear regression $$ y = \beta_0 + \beta_1 x $$. Clearly, the relationship is nonlinear and thus the residuals have non-random patterns.
 
 ## Code
 
@@ -117,7 +117,7 @@ The code above yields the following plot
 
 ![Residuals vs Fitted](../img/residplot1.png)
 
-Notice the bow-shaped line in red. This is an indicator that we are not capturing some of the non-linear features of the model. In other words, we are _underfitting_ the model. Perhaps the variance in the data might be better captured using the _square_ (or some other non-linear transformation) of one or more of the features. Which feature(s) specifically is beyond the scope of this post.
+Notice the bow-shaped line in red. This is an indicator that we are failing to capture some of the non-linear features of the model. In other words, we are _underfitting_ the model. Perhaps the variance in the data might be better captured using the _square_ (or some other non-linear transformation) of one or more of the features. Which feature(s) specifically is beyond the scope of this post.
 
 # Normal Q-Q Plot
 
@@ -143,7 +143,7 @@ for r, i in enumerate(abs_norm_resid_top_3):
 
 Looking at the graph above, there are several points that fall far away from the red line. This is indicative of the errors **not** being normally distributed, in fact our model suffers from "heavy tails".
 
-What does this say about the data? We are more likely to see extreme values than expected if the data was truly normally distributed.
+What does this say about the data? We are more likely to see extreme values than to be expected if the data was truly normally distributed.
 
 In general, there is plenty of wiggle room in violating these assumptions, but it is good to know what assumptions about the data we are violating.
 
@@ -178,11 +178,11 @@ plot_lm_3 = plt.figure()
 
 ![Scale-Location](../img/residplot3.png)
 
-*This* particular plot (with the housing data) is a tricky one to debug. The more horizontal the red line is, the more likely the data is homoscedastic. While a typical heteroscedastic plot has a sideways "V" shape, our graph has higher values on the left and on the right versus in the middle. This might be caused by not capturing the non-linearities in the model (see Residuals vs Fitted plot) and merits further investigation or model tweaking. The two most common methods of "fixing" heteroscedasticity is using a weighted least squares approach, or using a heteroscedastic corrected covariance matrix (hccm). Both of these methods are beyond the scope of this post.
+*This* particular plot (with the housing data) is a tricky one to debug. The more horizontal the red line is, the more likely the data is homoscedastic. While a typical heteroscedastic plot has a sideways "V" shape, our graph has higher values on the left and on the right versus in the middle. This might be caused by not capturing the non-linearities in the model (see Residuals vs Fitted plot) and merits further investigation or model tweaking. The two most common methods of "fixing" heteroscedasticity is using a weighted least squares approach, or using a heteroscedastic-corrected covariance matrix (hccm). Both of these methods are beyond the scope of this post.
 
 # Residuals vs Leverage
 
-Leverage points are nasty buggers. Unlike outliers, which have a high $$ y $$ value, leverage points have extreme $$ x $$ values. This may not seem so bad at face value, but it can have damaging effects on the model because the $$ \beta $$ coefficients can be very sensitive to leverage points. The purpose of the Residuals vs Leverage plot is to identify these problematic observations.
+Leverage points are nasty buggers. Unlike outliers, which have an unusually large $$ y $$ value, leverage points have extreme $$ x $$ values. This may not seem so bad at face value, but it can have damaging effects on the model because the $$ \beta $$ coefficients can be very sensitive to leverage points. The purpose of the Residuals vs Leverage plot is to identify these problematic observations.
 
 ## Code
 ```python
@@ -209,9 +209,9 @@ plot_lm_4 = plt.figure();
 
 ![Residuals vs Leverage](../img/residplot4.png)
 
-Fortunately, this arguably one of the easiest plots to interpret. Thanks to [Cook's Distance](https://en.wikipedia.org/wiki/Cook%27s_distance), we only need to find leverage points that have a distance greater than 0.5. In this plot, we do not have any leverage points.
+Fortunately, this arguably one of the easiest plots to interpret. Thanks to [Cook's Distance](https://en.wikipedia.org/wiki/Cook%27s_distance), we only need to find leverage points that have a distance greater than 0.5. In this plot, we do not have any leverage points that meet this criteria.
 
-In practice, there may be cases where we may want to remove points with a Cook's distance of less than 0.5, especially if there are only a few observations compared to the rest of the data. I would argue that removing the point on the far right of the plot should improve the model. If the point is removed, we we would re-run this analysis again and determine how much the model improved.
+In practice, there may be cases where we may want to remove points with a Cook's distance of less than 0.5, especially if there are only a few observations compared to the rest of the data. I would argue that removing the point on the far right of the plot should improve the model. If the point is removed, we would re-run this analysis again and determine how much the model improved.
 
 # Conclusion
 
