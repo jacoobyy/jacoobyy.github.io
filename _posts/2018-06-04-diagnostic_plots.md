@@ -21,9 +21,12 @@ In short, diagnostic plots help us determine visually how our model is fitting t
 
 These 4 plots examine a few different assumptions about the model and the data:
 
-1) The data can be fit a line (this includes after transformations on the predictors)
+1) The data can be fit a straight line (this includes any transformations made on the predictors, e.g., $$ x^2 $$)
+
 2) Errors are normally distributed
+
 3) Errors have constant variance, i.e., [homoscedasticity](https://en.wikipedia.org/wiki/Homoscedasticity)
+
 4) There are no [high leverage points](https://newonlinecourses.science.psu.edu/stat501/node/337/)
 
 Let's look at an example in R, and its corresponding output, using the *Boston* housing data.
@@ -37,7 +40,7 @@ plot(model)
 
 ![R Plots](../img/rplots.png)
 
-Our goal is to recreate these R plots using Python and provide some insight into their meaning in the Boston housing dataset.
+Our goal is to recreate these R plots using Python and provide some insight into their meaning in the housing dataset.
 
 We'll begin by importing the relevant libraries necessary for building our plots and reading in the data.
 
@@ -77,9 +80,9 @@ dataframe = pd.concat([X, y], axis=1)
 
 # Residuals vs Fitted
 
-First up is the **Residuals vs Fitted** plot. This graph shows if there are any nonlinear patterns in the residuals, and thus in the data as well. One of the mathematical assumptions in building an OLS model is that the errors are normally distributed. If this assumption holds and our data can be fit by a linear model, then we should see a relatively flat line when looking at the residuals vs fitted.  
+First up is the **Residuals vs Fitted** plot. This graph shows if there are any nonlinear patterns in the residuals, and thus in the data as well. One of the mathematical assumptions in building an OLS model is that the data can be fit by a line. If this assumption holds and our data can be fit by a linear model, then we should see a relatively flat line when looking at the residuals vs fitted.  
 
-An example of this would be trying to fit the function $$ f(x) = x^2 $$ with a linear regression $$ y = \beta_0 + \beta_1 x $$. Clearly, the relationship is nonlinear and thus the residuals will look bow-shaped.
+An example of this failing would be trying to fit the function $$ f(x) = x^2 $$ with a linear regression $$ y = \beta_0 + \beta_1 x $$. Clearly, the relationship is nonlinear and thus the residuals will look bow-shaped.
 
 ## Code
 
@@ -110,14 +113,15 @@ plot_lm_1.axes[0].set_xlabel('Fitted values')
 plot_lm_1.axes[0].set_ylabel('Residuals');
 ```
 
-which yields the following plot
+The code above yields the following plot
 
 ![Residuals vs Fitted](../img/residplot1.png)
 
-Notice the bow-shaped line in red. This is an indicator that we are not capturing some of the non-linear features of the model. In other words, we are underfitting the model. Perhaps the variance in the data might be better captured using the _square_ (or some other non-linear transformation) of one or more of the features. Which feature(s) specifically is beyond the scope of this post.
+Notice the bow-shaped line in red. This is an indicator that we are not capturing some of the non-linear features of the model. In other words, we are _underfitting_ the model. Perhaps the variance in the data might be better captured using the _square_ (or some other non-linear transformation) of one or more of the features. Which feature(s) specifically is beyond the scope of this post.
 
 # Normal Q-Q Plot
-This plot shows if the residuals are normally distributed. A **good** normal QQ plot has all of the residuals pretty close to the red line.
+
+This plot shows if the residuals are normally distributed. A **good** normal QQ plot has all of the residuals lying on or close to the red line.
 
 ## Code
 ```python
@@ -145,6 +149,7 @@ In general, there is plenty of wiggle room in violating these assumptions, but i
 
 
 # Scale-Location
+
 This plot is a way to check if the residuals suffer from non-constant variance, aka [heteroscedasticity](https://en.wikipedia.org/wiki/Heteroscedasticity).
 
 ## Code
@@ -173,10 +178,11 @@ plot_lm_3 = plt.figure()
 
 ![Scale-Location](../img/residplot3.png)
 
-*This* particular plot is a tricky one to debug. The more horizontal the red line is, the more likely the data is homoscedastic. While a typical heteroscedastic plot has a sideways "V" shape, our graph has higher values on the left and on the right versus in the middle. This might be caused by not capturing the non-linearities in the model (see Residuals vs Fitted plot) and merits further investigation or model tweaking.
+*This* particular plot (with the housing data) is a tricky one to debug. The more horizontal the red line is, the more likely the data is homoscedastic. While a typical heteroscedastic plot has a sideways "V" shape, our graph has higher values on the left and on the right versus in the middle. This might be caused by not capturing the non-linearities in the model (see Residuals vs Fitted plot) and merits further investigation or model tweaking. The two most common methods of "fixing" heteroscedasticity is using a weighted least squares approach, or using a heteroscedastic corrected covariance matrix (hccm). Both of these methods are beyond the scope of this post.
 
 # Residuals vs Leverage
-Leverage points are nasty buggers. Unlike outliers, which has a high $$ y $$ value, leverage points have extreme $$ x $$ values. This may not seem so bad at face value, but it can have damaging effects on the model because the data is $$ \beta $$ coefficients can be very sensitive to leverage points. The purpose of the Residuals vs Leverage plot is to identify these problematic observations.
+
+Leverage points are nasty buggers. Unlike outliers, which have a high $$ y $$ value, leverage points have extreme $$ x $$ values. This may not seem so bad at face value, but it can have damaging effects on the model because the $$ \beta $$ coefficients can be very sensitive to leverage points. The purpose of the Residuals vs Leverage plot is to identify these problematic observations.
 
 ## Code
 ```python
@@ -205,7 +211,13 @@ plot_lm_4 = plt.figure();
 
 Fortunately, this arguably one of the easiest plots to interpret. Thanks to [Cook's Distance](https://en.wikipedia.org/wiki/Cook%27s_distance), we only need to find leverage points that have a distance greater than 0.5. In this plot, we do not have any leverage points.
 
-In practice, there may be cases where we may want to remove points with a Cook's distance of less than 0.5, especially if there are only a few observations compared to the rest of the data. I would argue that removing the point on the far right of the plot should improve the model.
+In practice, there may be cases where we may want to remove points with a Cook's distance of less than 0.5, especially if there are only a few observations compared to the rest of the data. I would argue that removing the point on the far right of the plot should improve the model. If the point is removed, we we would re-run this analysis again and determine how much the model improved.
+
+# Conclusion
+
+In this post I set out to reproduce, using Python, the diagnostic plots found in the R programming language. Furthermore, I showed various ways to interpret them using a sample dataset.
+
+Lastly, there will be readers who after seeing this post will want to reproduce these plots in a systematic way. This was something I had initially set out to do myself but did not find much success. Below, I provide the code for the function to reproduce the plots in Python.
 
 # Wrapping it all in a function
 
